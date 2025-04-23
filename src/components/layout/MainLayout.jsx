@@ -1,21 +1,45 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import { Toaster } from 'react-hot-toast';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import { Toaster } from "react-hot-toast";
 
 function MainLayout() {
-    console.log("MainLayout rendering..")
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-slate-50">
       <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-6">
+      <main className="flex-grow container mx-auto px-4 py-6 sm:py-8 lg:py-10">
         <Outlet />
       </main>
       <Footer />
-      <Toaster position="top-right" reverseOrder={false} />
+      {/* Toast container for notifications */}
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        gutter={8}
+        toastOptions={{
+          // Define default options
+          className: "",
+          duration: 5000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+          // Default options for specific types
+          success: {
+            duration: 3000,
+            theme: {
+              primary: "green",
+              secondary: "black",
+            },
+          },
+          error: {
+            duration: 5000,
+          },
+        }}
+      />
     </div>
-  )
+  );
 }
 
-export default MainLayout
+export default MainLayout;
