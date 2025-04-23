@@ -11,6 +11,7 @@ import MainLayout from './components/layout/MainLayout.jsx';
 //pages
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
+import HomePage from './pages/HomePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true, //Matches the parent path '/'
-        //element: <HomePage />
+        element: <HomePage />
       },
       {
         path: 'login',

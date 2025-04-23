@@ -161,7 +161,7 @@ function Navbar() {
               <div className="hidden md:flex items-center space-x-3">
                 <Link
                   to="/login"
-                  className="bg-green-500 text-white hover:bg-green-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className=" text-slate-700 hover:bg-green-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Sign in
                 </Link>
@@ -184,9 +184,9 @@ function Navbar() {
               >
                 <span className="sr-only">Open main menu</span>
                 {isMobileMenuOpen ? (
-                  <HiX className="block h-6 w-6" aria-hidden="true" /> // Close Icon
+                  <HiX className="block h-6 w-6 text-black" aria-hidden="true" /> // Close Icon
                 ) : (
-                  <HiMenu className="block h-6 w-6" aria-hidden="true" /> // Menu Icon
+                  <HiMenu className="block h-6 w-6 text-black" aria-hidden="true" /> // Menu Icon
                 )}
               </button>
             </div>
