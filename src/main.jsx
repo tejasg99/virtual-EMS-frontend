@@ -12,6 +12,7 @@ import MainLayout from './components/layout/MainLayout.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import HomePage from './pages/HomePage.jsx';
+import EventsPage from './pages/EventsPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
         path: '/register',
         element: <RegisterPage />
       },
+      {
+        path: '/events',
+        element: <EventsPage />
+      }
     ],
   },
 ]);
