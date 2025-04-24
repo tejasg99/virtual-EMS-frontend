@@ -15,7 +15,7 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import EventsPage from './pages/EventsPage.jsx';
 import EventDetailPage from './pages/EventDetailPage.jsx';
-
+import NotFoundPage from './pages/NotFoundPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -49,16 +49,18 @@ const router = createBrowserRouter([
         children: [
           { path: 'profile', /*element: <ProfilePage /> */}, // Placeholders for now
           { path: 'events/:eventId/live',/* element: <EventLivePage /> */},
+          { path: 'create-event', /* element: <CreateEventPage /> */},
         ]
       },
       // Organizer/Admin routes
       {
         element: <ProtectedRoute allowedRoles={['organizer', 'admin']}/>,
         children: [
-          { path: 'create-event', /* element: <CreateEventPage /> */},
           { path: 'edit-event/:eventId',/* element: <EditEventPage /> */},
         ]
       },
+      // Catch 404 Not found errors
+      { path: '*', element: <NotFoundPage />}
     ],
   },
 ]);

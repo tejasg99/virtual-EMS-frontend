@@ -82,16 +82,15 @@ function Navbar() {
           <div className="hidden md:flex md:items-center md:space-x-6">
             <Link
               to="/events"
-              className="text-black hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md border-[1px] border-slate-400 text-sm font-medium transition-colors"
+              className="text-black hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md  text-sm font-medium transition-colors"
             >
               Browse events
             </Link>
             {/* Conditionally show Create Event based on role */}
-            {currentUser &&
-              ["organizer", "admin"].includes(currentUser.role) && (
+            {currentUser && (
                 <Link
                   to="/create-event"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-black hover:bg-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Create Event
                 </Link>
@@ -106,7 +105,7 @@ function Navbar() {
                 <div>
                   <button
                     type="button"
-                    className="flex items-center justify-center bg-indigo-600 rounded-full h-9 w-9 text-sm text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white hover:bg-indigo-700 transition-colors"
+                    className="flex items-center justify-center bg-indigo-600 rounded-full h-9 w-9 text-sm text-white font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-offset-gray-100 focus:ring-white hover:bg-indigo-800 cursor-pointer transition-colors"
                     id="user-menu-button"
                     aria-expanded={isDropdownOpen}
                     aria-haspopup="true"
@@ -120,7 +119,7 @@ function Navbar() {
                 {/* Dropdown Panel */}
                 {isDropdownOpen && (
                   <div
-                    className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-gray-500 ring-opacity-5 focus:outline-none"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"
@@ -207,7 +206,7 @@ function Navbar() {
           >
             Browse events
           </Link>
-          {currentUser && ["organizer", "admin"].includes(currentUser.role) && (
+          {currentUser && (
             <Link
               to="/create-event"
               className="text-black hover:bg-slate-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
@@ -222,18 +221,18 @@ function Navbar() {
             {currentUser ? (
               // --- Logged In (Mobile) ---
               <>
-                <div className="flex items-center px-5">
+                <div className="flex items-center px-5 border-b border-slate-400">
                   <div className="flex-shrink-0">
                     {/* You could show initials here too if desired */}
                     <div className="flex items-center justify-center bg-indigo-600 rounded-full h-9 w-9 text-sm text-white font-semibold">
                       {userInitials || "?"}
                     </div>
                   </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium leading-none text-white">
+                  <div className="ml-3 mb-4">
+                    <div className="text-base font-medium leading-none text-black mb-1">
                       {currentUser.name || "User"}
                     </div>
-                    <div className="text-sm font-medium leading-none text-gray-400 truncate">
+                    <div className="text-sm font-medium text-gray-600">
                       {currentUser.email}
                     </div>
                   </div>

@@ -60,7 +60,7 @@ function EventsPage() {
   } else if (isSuccess && events.length === 0) {
     content = (
       <p className="text-center text-gray-600 py-10">
-        No events found matching your criteria.
+        No events found
       </p>
     );
   } else if (isSuccess && events.length > 0) {
