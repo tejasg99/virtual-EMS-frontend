@@ -7,6 +7,7 @@ import './index.css';
 
 //components 
 import MainLayout from './components/layout/MainLayout.jsx';
+import ProtectedRoute from './hooks/useRequireAuth.jsx';
 
 //pages
 import LoginPage from './pages/LoginPage.jsx';
@@ -15,11 +16,13 @@ import HomePage from './pages/HomePage.jsx';
 import EventsPage from './pages/EventsPage.jsx';
 import EventDetailPage from './pages/EventDetailPage.jsx';
 
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: <MainLayout />,
     children: [
+      // Public routes
       {
         index: true, //Matches the parent path '/'
         element: <HomePage />
@@ -39,6 +42,22 @@ const router = createBrowserRouter([
       {
         path: 'events/:eventId',
         element: <EventDetailPage />,
+      },
+      // Protected routes
+      {
+        element: <ProtectedRoute />, // required login
+        children: [
+          { path: 'profile', /*element: <ProfilePage /> */}, // Placeholders for now
+          { path: 'events/:eventId/live',/* element: <EventLivePage /> */},
+        ]
+      },
+      // Organizer/Admin routes
+      {
+        element: <ProtectedRoute allowedRoles={['organizer', 'admin']}/>,
+        children: [
+          { path: 'create-event', /* element: <CreateEventPage /> */},
+          { path: 'edit-event/:eventId',/* element: <EditEventPage /> */},
+        ]
       },
     ],
   },
