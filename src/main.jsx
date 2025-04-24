@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import HomePage from './pages/HomePage.jsx';
 import EventsPage from './pages/EventsPage.jsx';
+import EventDetailPage from './pages/EventDetailPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,13 +29,17 @@ const router = createBrowserRouter([
         element: <LoginPage />
       },
       {
-        path: '/register',
+        path: 'register',
         element: <RegisterPage />
       },
       {
-        path: '/events',
+        path: 'events',
         element: <EventsPage />
-      }
+      },
+      {
+        path: 'events/:eventId',
+        element: <EventDetailPage />,
+      },
     ],
   },
 ]);
