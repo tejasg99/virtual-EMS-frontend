@@ -16,6 +16,7 @@ import HomePage from './pages/HomePage.jsx';
 import EventsPage from './pages/EventsPage.jsx';
 import EventDetailPage from './pages/EventDetailPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import CreateEventPage from './pages/CreateEventPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'profile', /*element: <ProfilePage /> */}, // Placeholders for now
           { path: 'events/:eventId/live',/* element: <EventLivePage /> */},
-          { path: 'create-event', /* element: <CreateEventPage /> */},
+          { path: 'create-event',  element: <CreateEventPage /> },
         ]
       },
       // Organizer/Admin routes
