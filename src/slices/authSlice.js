@@ -1,9 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { authApiSlice } from "../api/authApiSlice.js";
 
+// --- Helper functions to interact with localStorage ---
+const getUserFromStorage = () => {
+    try {
+      const user = localStorage.getItem('user');
+      return user ? JSON.parse(user) : null;
+    } catch (error) {
+      console.error("Failed to parse user from localStorage", error);
+      localStorage.removeItem('user'); // Clear corrupted data
+      return null;
+    }
+};
+  
+const getTokenFromStorage = () => {
+    return localStorage.getItem('accessToken');
+};
+
+// Read the initial state from local storage
 const initialState = {
-    user: null, // Store user info 
-    token: null, // Store access token
+    // user: null, // Store user info 
+    // token: null, // Store access token
+    user: getUserFromStorage(),
+    token: getTokenFromStorage(),
 };
 
 const authSlice = createSlice({
@@ -15,11 +34,17 @@ const authSlice = createSlice({
             const { user, accessToken } = action.payload;
             state.user = user;
             state.token = accessToken;
+            // Store in localStorage
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('accessToken', accessToken);
         },
         // reducer to clear credentials on logout
         logOut: (state) => {
             state.user = null;
             state.token = null;
+            // Remove from localStorage
+            localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
         },
     },
     // extra reducers to handle actions dispatched by RTK query endpoints
@@ -31,6 +56,8 @@ const authSlice = createSlice({
                 if(payload?.data) {
                     state.user = payload.data.user;
                     state.token = payload.data.accessToken;
+                    localStorage.setItem('user', JSON.stringify(payload.data.user));
+                    localStorage.setItem('accessToken', payload.data.accessToken);
                 }
             }
         );
@@ -50,7 +77,9 @@ const authSlice = createSlice({
                 // clear state directly
                 state.user = null;
                 state.token = null;
-                console.log("Logout fulfiled, state cleared");
+                localStorage.removeItem('user');
+                localStorage.removeItem('accessToken');
+                console.log("Logout fulfiled, state and localStorage cleared");
             }
         );
         // Handle potential logout errors if needed
@@ -61,6 +90,8 @@ const authSlice = createSlice({
                 // still clear state as the user intention was to log out.
                 state.user = null;
                 state.token = null;
+                localStorage.removeItem('user');
+                localStorage.removeItem('accessToken');
             }
         );
     },
