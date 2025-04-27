@@ -26,15 +26,6 @@ export const authApiSlice = baseApi.injectEndpoints({
             // No body needed, relies on token in header (added by prepareHeaders)
         }),
         }),
-        // Mutation for refreshing access token
-        // useRefreshToken endpoint will not be used directly but baseQuery will use it
-        refreshToken: builder.mutation({
-            query: () => ({
-                url: '/auth/refresh-token',
-                method: 'POST',
-                // Backend expects refresh token from http only cookie
-            })
-        })
     }),
 });
 
@@ -43,5 +34,4 @@ export const {
     useLoginMutation,
     useRegisterMutation,
     useLogoutMutation,
-    useRefreshTokenMutation,
 } = authApiSlice;

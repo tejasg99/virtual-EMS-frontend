@@ -24,10 +24,17 @@ function LoginForm() {
 
   // form submission
   const onSubmit = async (data) => {
+    // Ensure data is not empty before proceeding
+    if (!data || !data.email || !data.password) {
+        console.error("Form data is missing email or password before sending.");
+        toast.error("Please enter both email and password.");
+        return; // Prevent sending empty data
+    }
+
     try {
         //call login mutation with email and password
         const result = await login(data).unwrap(); //unwrap will throw an error if mutation fails
-
+        
         if(result?.data) {
             dispatch(setCredentials(result.data)); // to set credentials(state)
         } else {
