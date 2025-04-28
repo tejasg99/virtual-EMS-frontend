@@ -22,7 +22,10 @@ export const eventApiSlice = baseApi.injectEndpoints({
         
         //Query to get a single event by id
         getEventById: builder.query({
-            query: (eventId) => `events/${eventId}`,
+            query: (eventId) => ({
+                url: `/events/${eventId}`,
+                method: 'GET',
+            }),
             providesTags: (result, error, eventId) => [{ type: 'Event', id: eventId }], //provides a specific tag for this event
         }),
 

@@ -12,7 +12,9 @@ export const userApiSlice = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         // Query to get current user profile
         getCurrentUser: builder.query({
-            query: () => '/users/me',
+            query: () => ({
+                url: '/users/me',
+            }),
             // Provides a specific tag for the current user's data
             providesTags: [{ type: 'User', id: 'ME' }],
         }),
@@ -31,13 +33,17 @@ export const userApiSlice = baseApi.injectEndpoints({
         // Admin user endpoints
         // Query to get all users(filtering/pagination to be implemented later)
         getAllUsers: builder.query({
-            query: () => '/users/',
+            query: () => ({
+                url: '/users/',
+            }),
             providesTags: (result) => providesList(result?.data?.users, 'User'),
         }),
 
         // Query to get user by Id
         getUserById: builder.query({
-            query: (userId) => `/users/${userId}`,
+            query: (userId) => ({
+                url:`/users/${userId}`, 
+            }),
             providesTags: (result, error, userId) => [{ type: 'User', id: userId }],
         }),
 

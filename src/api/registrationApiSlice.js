@@ -56,7 +56,10 @@ export const registrationApiSlice = baseApi.injectEndpoints({
 
         // Query to check registration status of a particular event
         checkRegistrationStatus: builder.query({
-            query: (eventId) => `/events/${eventId}/registration-status`,
+            query: (eventId) => ({
+                url: `/events/${eventId}/registration-status`,
+                method: 'GET'
+            }),
             // Provides a tag specific to this user/event status check
             providesTags: (result, error, eventId) => [{ type: 'Registration', id: `${eventId}-STATUS` }],
         }),

@@ -7,7 +7,7 @@ import axiosInstance from "./axiosInstance";
 
 const axiosBaseQuery = ({ baseUrl } = { baseUrl: ''}) => async ({ url, method, params, body }) => {
     // --- ADD LOG 1: Log received arguments ---
-    // console.log('[axiosBaseQuery] Received args:', { url, method, params, body });
+    // console.log('[axiosBaseQuery] Received args:', { url, method, params, body, data });
 
     try {
       // Construct the config for Axios
