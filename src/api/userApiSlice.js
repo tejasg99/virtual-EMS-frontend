@@ -14,6 +14,7 @@ export const userApiSlice = baseApi.injectEndpoints({
         getCurrentUser: builder.query({
             query: () => ({
                 url: '/users/me',
+                method: 'GET',
             }),
             // Provides a specific tag for the current user's data
             providesTags: [{ type: 'User', id: 'ME' }],
@@ -35,6 +36,7 @@ export const userApiSlice = baseApi.injectEndpoints({
         getAllUsers: builder.query({
             query: () => ({
                 url: '/users/',
+                method: 'GET',
             }),
             providesTags: (result) => providesList(result?.data?.users, 'User'),
         }),
@@ -42,7 +44,8 @@ export const userApiSlice = baseApi.injectEndpoints({
         // Query to get user by Id
         getUserById: builder.query({
             query: (userId) => ({
-                url:`/users/${userId}`, 
+                url:`/users/${userId}`,
+                method: 'GET', 
             }),
             providesTags: (result, error, userId) => [{ type: 'User', id: userId }],
         }),
