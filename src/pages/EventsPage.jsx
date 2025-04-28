@@ -79,7 +79,7 @@ function EventsPage() {
   }
 
   return (
-    <div className="space-y-8 mx-5">
+    <div className="space-y-8 mx-5 h-screen">
       <h1 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mt-5">
         Browse Events
       </h1>

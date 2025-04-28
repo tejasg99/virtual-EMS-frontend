@@ -11,7 +11,7 @@ function HomePage() {
       <section className="text-center pt-10 pb-16 md:pt-16 md:pb-20 bg-gradient-to-b from-white to-slate-50 rounded-lg">
         <div className="container mx-auto px-4">
           <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900 mb-8">
-            Welcome to EventMan
+            Welcome to <span className="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">EventMan</span>
           </h1>
           <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-600 mb-12">
             Discover, host, and attend engaging virtual events, webinars,
