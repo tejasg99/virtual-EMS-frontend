@@ -18,6 +18,7 @@ import EventDetailPage from './pages/EventDetailPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import CreateEventPage from './pages/CreateEventPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
+import EditEventPage from './pages/EditEventPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['organizer', 'admin']}/>,
         children: [
-          { path: 'edit-event/:eventId',/* element: <EditEventPage /> */},
+          { path: 'edit-event/:eventId', element: <EditEventPage /> },
         ]
       },
       // Catch 404 Not found errors
