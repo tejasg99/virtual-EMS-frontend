@@ -23,7 +23,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor - Handles 401 errors and token refresh logic
+// Response interceptor - Handles 401 errors and token refresh logic(Updated)
 
 // Mutex flag and queue for handling concurrent refresh attempts
 let isRefreshing = false;
@@ -49,10 +49,26 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config; // original request configuration
+    const status = error.response?.status;
 
+    // Extract error message from backend response data
+    const errorMessage = error.response?.data?.message?.toLowerCase() || '';
+
+    // Check for specific token errors that require immediate logout
+    const isTokenMalformed = errorMessage.includes('jwt malformed');
+    const isTokenInvalid = errorMessage.includes('invalid token') || errorMessage.includes('invalid signature');
+
+    if(isTokenMalformed || isTokenInvalid) {
+      console.error('Axios Interceptor: Detected unrecoverable token error:', errorMessage);
+      store.dispatch(logOut());
+      // redirect
+      window.location.href = '/login';
+      return Promise.reject(new Error('Invalid session. Please log in again.')); // Reject the original promise
+    }
+ 
     // Check if error is 401 and it's not a retry request and not the refresh token request itself
     if (
-      error.response?.status === 401 &&
+      status === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== "/auth/refresh-token"
     ) {
@@ -65,10 +81,7 @@ axiosInstance.interceptors.response.use(
         );
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject, config: originalRequest });
-        }).catch((err) => {
-          // for errors during the retry after refresh attempt failed
-          return Promise.reject(err);
-        });
+        }).catch((err) => Promise.reject(err));
       }
 
       // Mark this request as a retry attempt to prevent infinite loops
@@ -96,8 +109,7 @@ axiosInstance.interceptors.response.use(
           );
 
           // Update the header for the original failed request
-          axiosInstance.defaults.headers.common["Authorization"] =
-            `Bearer ${newAccessToken}`;
+          axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
           originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
           // Process the queue of failed requests with the new token
