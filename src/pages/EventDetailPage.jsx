@@ -10,6 +10,7 @@ import {
   HiOutlineUser,
   HiOutlineUsers,
   HiOutlineVideoCamera,
+  HiOutlinePencil,
 } from "react-icons/hi";
 
 // RTK query hooks
@@ -37,7 +38,6 @@ const ErrorDisplay = ({ message }) => (
   >
     <strong className="font-bold">Error:</strong>
     <span className="block sm:inline">
-      {" "}
       {message || "Could not fetch event details."}
     </span>
   </div>
@@ -147,24 +147,42 @@ function EventDetailPage() {
   const endTime = new Date(event.endTime);
   const isLive = now >= startTime && now < endTime && event.status === "live";
   const isUpcoming = now < startTime && event.status === "upcoming";
-  const isPast = now >= endTime && event.status === "past";
+  const isPast = now >= endTime || event.status === "past";
   const canRegister = isUpcoming || (isLive && !isPast); // allow registration for upcoming and live events only
+
+  // Check if the user can edit the event(only admin and organizer)
+  const canEdit = currentUser && event.organizer && (currentUser._id === event.organizer._id || currentUser.role === 'admin');
 
   return (
     <div className="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md border border-gray-200">
-      {/* Event header */}
+      {/* Event header and Edit button */}
       <div className="mb-6 pb-4 border-b border-gray-200">
-        {event.eventType && (
-          <span className="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold mb-2 px-2.5 py-0.5 rounded capitalize">
-            {event.eventType.replace("_", " ")}
-          </span>
+        {/* Left side: Title/Organizer */}
+        <div className="flex justify-between items-start gap-4">
+          {event.eventType && (
+            <span className="inline-block bg-indigo-100 text-indigo-800 text-xs font-semibold mb-2 px-2.5 py-0.5 rounded capitalize">
+              {event.eventType.replace("_", " ")}
+            </span>
+          )}
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            {event.title}
+          </h1>
+          <p className="text-lg text-gray-600">
+            Organized by {event.organizer?.name || "Unknown"}
+          </p>          
+        </div>
+        {/* Right side: Edit Button (Conditional) */}
+        {canEdit && (
+          <Link
+            to={`/edit-event/${eventId}`}
+            className="inline-flex items-center mt-1 flex-shrink-0 px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            aria-label="Edit event"
+          >
+          <HiOutlinePencil className="w-5 h-5 mr-2"/>
+          Edit
+          </Link>
         )}
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          {event.title}
-        </h1>
-        <p className="text-lg text-gray-600">
-          Organized by {event.organizer?.name || "Unknown"}
-        </p>
+
       </div>
       {/* Main Content Area */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
