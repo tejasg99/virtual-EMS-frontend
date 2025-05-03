@@ -4,7 +4,7 @@ import { HiOutlineExclamationCircle } from 'react-icons/hi'; // Icon for emphasi
 
 function NotFoundPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+    <div className="flex flex-col items-center justify-center h-screen text-center px-4">
       <HiOutlineExclamationCircle className="w-16 h-16 text-red-500 mb-4" />
       <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-2">
         404
