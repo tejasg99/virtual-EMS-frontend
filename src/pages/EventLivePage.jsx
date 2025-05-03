@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
@@ -8,6 +8,7 @@ import { useGetEventByIdQuery } from "../api/eventApiSlice.js"; // RTK query hoo
 import { useCheckRegistrationStatusQuery } from "../api/registrationApiSlice.js"; // reg status check hook
 import JitsiMeet from "../components/liveEvent/JitsiMeet.jsx"; // Jitsi component
 import ChatWindow from "../components/liveEvent/ChatWindow.jsx"; // ChatWindow component
+import QnaList from '../components/liveEvent/QnaList.jsx'; // QnaList component 
 import socketService from "../services/socketService.js"; // socket handler service
 
 // Reusable Loading/Error components
@@ -44,14 +45,16 @@ function EventLivePage() {
   const { eventId } = useParams();
   const currentUser = useSelector(selectCurrentUser);
 
-  // --- State for Chat ---
+  // --- State for Chat and Qna---
   const [chatMessages, setChatMessages] = useState([]);
+  const [qnaItems, setQnaItems] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(true); // Loading state for chat history
+  const [isQnaLoading, setIsQnaLoading] = useState(true); // Loading state for qna
   const [isSocketConnected, setIsSocketConnected] = useState(
     socketService.socket?.connected || false
   );
 
-  // Fetch event detailes
+  // Fetch event detailes including populated speakers
   const {
     data: eventData,
     isLoading: isLoadingEvent,
@@ -72,9 +75,18 @@ function EventLivePage() {
   const isRegistered = registrationStatusData?.data?.isRegistered;
   const isLoading = isLoadingEvent || (currentUser && isLoadingStatus);
 
+  // Determine if current user can answer Q&A
+  // Ensure event and event.organizer/speakers are loaded before checking
+  const canAnswerQna = useMemo(() => {
+    if(!currentUser || !event?.organizer) return false; // Need user and event organizer data
+    return(
+      currentUser._id === event.organizer._id || currentUser.role === 'admin' || event.speakers?.some(s => s._id === currentUser._id) // Check if the user is in the speaker array
+    );
+  }, [currentUser, event]);
+
   // Socket io setup
   useEffect(() => {
-    if (!eventId || !currentUser) return; // Dont proceed without eventId or user
+    if (!eventId || !currentUser || !event) return; // Dont proceed without eventId or user
 
     // Define callback functions for socket events
     const handleNewMessage = (newMessage) => {
@@ -86,6 +98,20 @@ function EventLivePage() {
       setIsChatLoading(false); // Stop loading history
     };
 
+    const handleNewQuestion = (newQuestion) => {
+      setQnaItems((prevQuestions) => [...prevQuestions, newQuestion]);
+    }
+
+    const handleQnaHistory = (history) => {
+      setQnaItems(history);
+      setIsQnaLoading(false);
+    }
+
+    // Handler for updates to existing Q&A items(answer)
+    const handleQuestionUpdate = (updatedQuestion) => {
+      setQnaItems((prev) => prev.map(q => q._id === updatedQuestion._id ? updatedQuestion : q));
+    }
+
     const handleSocketError = (error) => {
       console.error("Socket Error received: ", error.message);
       toast.error(error.message || "Chat connection error");
@@ -96,6 +122,7 @@ function EventLivePage() {
 
     // Connect and set up listeners
     socketService.connect();
+    // Join chat room
     socketService.joinEventRoom(eventId, (ack) => {
       if (ack.success) {
         console.log(`Successfully joined chat room for event ${eventId}`);
@@ -107,11 +134,25 @@ function EventLivePage() {
       }
     });
 
+    // Join Q&A room
+    socketService.joinEventQnaRoom(eventId, (ack) => {
+      if(ack.success) {
+        console.log(`Joined Q&A room for event ${eventId}`);
+      } else {
+        console.error(`Failed to join Q&A room: ${ack.message}`);
+        toast.error(`Q&A Error: ${ack.message}`);
+        setIsQnaLoading(false);
+      }
+    });
+
     // Register listeners
     socketService.on("connect", handleConnect);
     socketService.on("disconnect", handleDisconnect);
     socketService.on("newChatMessage", handleNewMessage);
     socketService.on("chatHistory", handleChatHistory);
+    socketService.on("newQuestion", handleNewQuestion);
+    socketService.on("qnaHistory", handleQnaHistory);
+    socketService.on("questionAnswered", handleQuestionUpdate);
     socketService.on("socketError", handleSocketError);
 
     // Cleanup function: Leave room and remove listeners
@@ -120,14 +161,18 @@ function EventLivePage() {
         `Cleaning up chat listeners and leaving room for event ${eventId}`
       );
       socketService.leaveEventRoom(eventId);
+      socketService.leaveEventQnaRoom(eventId);
       socketService.off("connect", handleConnect);
       socketService.off("disconnect", handleDisconnect);
       socketService.off("newChatMessage", handleNewMessage);
       socketService.off("chatHistory", handleChatHistory);
+      socketService.off("newQuestion", handleNewQuestion);
+      socketService.off("qnaHistory", handleQnaHistory);
+      socketService.off("questionAnswered", handleQuestionUpdate);
       socketService.off("socketError", handleSocketError);
       // Don't disconnect globally here, only when user leaves the app/logs out
     };
-  }, [eventId, currentUser]); // Depend on eventId and currentUser
+  }, [eventId, currentUser, event]); // Depend on eventId, currentUser and event to re run on changes
 
   // Send message handler
   const handleSendMessage = useCallback(
@@ -149,6 +194,35 @@ function EventLivePage() {
       });
     },
     [eventId]
+  );
+
+  const handleSubmitQuestion = useCallback(
+    (question) => {
+      return new Promise((resolve, reject) => {
+        if(!eventId || !question) {
+          reject(new Error("Missing event ID or question"));
+          return;
+        }
+        socketService.submitQuestion(eventId, question, (ack) => {
+          if(ack.success) {
+            resolve();
+          } else {
+            toast.error(ack.message || "Failed to submit question.");
+            reject(new Error(ack.message || "Failed to submit question"));
+          }
+        });
+      });
+    }, [eventId]
+  );
+
+  const handleAnswerQuestion = useCallback(
+    (questionId, answer) => {
+      socketService.answerQuestion(eventId, questionId, answer, (ack) => {
+        if(!ack.success) {
+          toast.error(ack.message || "Failed to submit answer.");
+        }
+      });
+    }, [eventId]
   );
 
   // Check Access
@@ -253,14 +327,15 @@ function EventLivePage() {
             disabled={!isSocketConnected} // Disable input if socket is not connected
           />
 
-          {/* Placeholder for Q&A Component */}
-          <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 min-h-[300px]">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">Q&A</h2>
-            <p className="text-gray-500">
-              Question and Answer section coming soon...
-            </p>
-            {/* Q&A list and input will go here */}
-          </div>
+          {/* Q&A Component */}
+          <QnaList
+            questions={qnaItems}
+            onAnswer={handleAnswerQuestion}
+            onSubmitQuestion={handleSubmitQuestion}
+            canAnswer={canAnswerQna} // Permission flag
+            isLoadingHistory={isQnaLoading}
+            disabled={!isSocketConnected} 
+          />
         </div>
       </div>
     </div>
