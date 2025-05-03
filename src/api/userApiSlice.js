@@ -34,9 +34,10 @@ export const userApiSlice = baseApi.injectEndpoints({
         // Admin user endpoints
         // Query to get all users(filtering/pagination to be implemented later)
         getAllUsers: builder.query({
-            query: () => ({
+            query: (params) => ({
                 url: '/users/',
                 method: 'GET',
+                params: params,
             }),
             providesTags: (result) => providesList(result?.data?.users, 'User'),
         }),
@@ -55,7 +56,7 @@ export const userApiSlice = baseApi.injectEndpoints({
             query: ({userId, role}) => ({
                 url: `/users/${userId}/role`,
                 method: 'PATCH',
-                body: role,                
+                body: {role},                
             }),
             invalidatesTags: (result, error, userId) => [
                 {type: 'User', id: userId},
