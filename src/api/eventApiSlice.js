@@ -17,7 +17,7 @@ export const eventApiSlice = baseApi.injectEndpoints({
                 params: params, // passing directly
             }),
             // Provides a general 'Event' list tag and individual tags for each fetched event
-            providesTags: (result) => providesList(result?.data?.events, 'Event')
+            providesTags: (result) => providesList(result?.data?.events, 'Event').concat([{ type: 'Event', id: 'PUBLIC_LIST' }]), // Add specific tag for public list
         }),
         
         //Query to get a single event by id
@@ -29,6 +29,26 @@ export const eventApiSlice = baseApi.injectEndpoints({
             providesTags: (result, error, eventId) => [{ type: 'Event', id: eventId }], //provides a specific tag for this event
         }),
 
+        // To get events organized by the current user
+        getMyOrganizedEvents: builder.query({
+            query: (params) => ({
+                url: '/events/my-organized',
+                method: 'GET',
+                params: params,
+            }),
+            // Provides a specific list tag for organizer events and individual tags
+            providesTags: (result) => providesList(result?.data?.events, 'Event').concat([{ type: 'Event', id: 'ORGANIZER_LIST' }]),
+        }),
+
+        getOrganizerStats: builder.query({
+            query: () => ({
+                url: '/events/my-organized/stats',
+                method: 'GET',
+            }),
+            // Provide a specific tag for these stats
+            providesTags: ['OrganizerStats'],
+        }),
+
         // Mutation to create a new event
         createEvent: builder.mutation({
             query: (eventData) => ({
@@ -36,8 +56,12 @@ export const eventApiSlice = baseApi.injectEndpoints({
                 method: 'POST',
                 body: eventData,
             }),
-            // Invalidates the 'Event' list tag to refetch the event list after creation
-            invalidatesTags: [{ type: 'Event', id: 'LIST' }],
+            // Invalidate both the organizer and public lists
+            invalidatesTags: [
+                { type: 'Event', id: 'LIST' }, 
+                { type: 'Event', id: 'ORGANIZER_LIST' }, 
+                { type: 'Event', id: 'PUBLIC_LIST' }, 'OrganizerStats'
+            ],
         }),
 
         // Mutation to update existing event
@@ -49,8 +73,11 @@ export const eventApiSlice = baseApi.injectEndpoints({
             }),
             // Invalidates the specific event and list tag
             invalidatesTags: (result, error, {eventId}) => [
-                {type: 'Event', id: eventId},
-                {type: 'Event', id: 'LIST'}, // Invalidate as status/time might change
+                { type: 'Event', id: eventId },
+                { type: 'Event', id: 'LIST' }, // General list tag
+                { type: 'Event', id: 'ORGANIZER_LIST' }, // Invalidate organizer list
+                { type: 'Event', id: 'PUBLIC_LIST' }, // Invalidate public list
+                'OrganizerStats',
             ],
         }),
 
@@ -63,7 +90,10 @@ export const eventApiSlice = baseApi.injectEndpoints({
             // Invalidate the tag and list
             invalidatesTags: (result, error, eventId) => [
                 { type: 'Event', id: eventId },
-                { type: 'Event', id: 'LIST' }
+                { type: 'Event', id: 'LIST' },
+                { type: 'Event', id: 'ORGANIZER_LIST' },
+                { type: 'Event', id: 'PUBLIC_LIST' },
+                'OrganizerStats',
             ],
         }),
     }),
@@ -73,7 +103,9 @@ export const eventApiSlice = baseApi.injectEndpoints({
 export const {
     useGetEventsQuery,
     useGetEventByIdQuery,
+    useGetMyOrganizedEventsQuery,
+    useGetOrganizerStatsQuery,    
     useCreateEventMutation,
     useUpdateEventMutation,
-    useDeleteEventMutation
+    useDeleteEventMutation,
 } = eventApiSlice;

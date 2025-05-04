@@ -20,6 +20,7 @@ import CreateEventPage from './pages/CreateEventPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import EditEventPage from './pages/EditEventPage.jsx';
 import AdminUserManagementPage from './pages/AdminUserManagementPage.jsx';
+import OrganizerDashboardPage from './pages/OrganizerDashboardPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -61,6 +62,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute allowedRoles={['organizer', 'admin']}/>,
         children: [
           { path: 'edit-event/:eventId', element: <EditEventPage /> },
+          { path: 'organizer-dashboard', element: <OrganizerDashboardPage /> },
         ]
       },
       // Admin routes

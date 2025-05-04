@@ -63,6 +63,16 @@ function Navbar() {
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
+
+  // Determine dashboard link components basded on the role
+  let dashboardLink = null;
+  if(currentUser) {
+    if(currentUser.role === 'admin') {
+      dashboardLink = { to: "/admin/users", text: "Admin Dashboard"};
+    } else if (currentUser.role === 'organizer') {
+      dashboardLink = { to: "organizer-dashboard", text: "Organizer Dashboard"};
+    }
+  }
   
   return (
     <nav className="bg-gradient-to-b from-white to-slate-50 shadow-md sticky top-0 z-50">
@@ -90,17 +100,18 @@ function Navbar() {
             {currentUser && (
                 <Link
                   to="/create-event"
-                  className="text-black hover:bg-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  className="text-black hover:bg-white hover:text-indigo-700 hover:border px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   Create Event
                 </Link>
             )}
-            {currentUser && currentUser.role === 'admin' && (
+            { /* Conditionally show Dashboard link */ }
+            {dashboardLink && (
               <Link
-                to="/admin/users"
-                className="text-black hover:bg-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                to={dashboardLink.to}
+                className="text-black hover:bg-white hover:text-indigo-700 hover:border px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
-                Admin dashboard
+                {dashboardLink.text}
               </Link>
             )}
           </div>
@@ -223,14 +234,11 @@ function Navbar() {
               Create Event
             </Link>
           )}
-          {currentUser && currentUser.role === 'admin' && (
-            <Link
-              to="/admin/users"
-              className="text-black hover:bg-slate-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
-              onClick={closeMobileMenu}
-            >
-              Admin dashboard
-            </Link>
+          {/* Conditionally show Dashboard link */}
+          {dashboardLink && (
+             <Link to={dashboardLink.to} className="text-black hover:bg-white hover:text-indigo-700 hover:border block px-3 py-2 rounded-md text-base font-medium transition-colors" onClick={closeMobileMenu}>
+               {dashboardLink.text}
+             </Link>
           )}
 
           {/* Mobile Auth/Profile Section */}
