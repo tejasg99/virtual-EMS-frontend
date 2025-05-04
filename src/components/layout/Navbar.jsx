@@ -94,7 +94,15 @@ function Navbar() {
                 >
                   Create Event
                 </Link>
-              )}
+            )}
+            {currentUser && currentUser.role === 'admin' && (
+              <Link
+                to="/admin/users"
+                className="text-black hover:bg-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Admin dashboard
+              </Link>
+            )}
           </div>
 
           {/* Right side: Auth buttons or Profile Dropdown */}
@@ -213,6 +221,15 @@ function Navbar() {
               onClick={closeMobileMenu}
             >
               Create Event
+            </Link>
+          )}
+          {currentUser && currentUser.role === 'admin' && (
+            <Link
+              to="/admin/users"
+              className="text-black hover:bg-slate-500 hover:text-white block px-3 py-2 rounded-md text-base font-medium transition-colors"
+              onClick={closeMobileMenu}
+            >
+              Admin dashboard
             </Link>
           )}
 
