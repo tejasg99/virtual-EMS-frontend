@@ -292,7 +292,7 @@ function EventLivePage() {
   }
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div className="space-y-6 lg:space-y-8 mx-8 my-1">
       {/* Header */}
       <div className="pb-4 border-b border-gray-200">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900">

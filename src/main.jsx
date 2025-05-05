@@ -21,6 +21,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 import EditEventPage from './pages/EditEventPage.jsx';
 import AdminUserManagementPage from './pages/AdminUserManagementPage.jsx';
 import OrganizerDashboardPage from './pages/OrganizerDashboardPage.jsx';
+import EventLivePage from './pages/EventLivePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -53,7 +54,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />, // required login
         children: [
           { path: 'profile', element: <ProfilePage /> },
-          { path: 'events/:eventId/live',/* element: <EventLivePage /> */},
+          { path: 'events/:eventId/live', element: <EventLivePage /> },
           { path: 'create-event',  element: <CreateEventPage /> },
         ]
       },

@@ -216,7 +216,7 @@ function Navbar() {
         className={`md:hidden ${isMobileMenuOpen ? "block" : "hidden"} transition-all duration-300 ease-in-out`}
         id="mobile-menu"
       >
-        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-slate-50 to-slate-200 border-t border-slate-400">
+        <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-b from-white to-slate-100 border-t border-slate-400">
           {/* Mobile Links */}
           <Link
             to="/events"

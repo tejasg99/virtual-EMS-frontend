@@ -145,7 +145,7 @@ function EventDetailPage() {
   const now = new Date();
   const startTime = new Date(event.startTime);
   const endTime = new Date(event.endTime);
-  const isLive = now >= startTime && now < endTime && event.status === "live";
+  const isLive = now >= startTime && now < endTime || event.status === "live";
   const isUpcoming = now < startTime && event.status === "upcoming";
   const isPast = now >= endTime || event.status === "past";
   const canRegister = isUpcoming || (isLive && !isPast); // allow registration for upcoming and live events only
