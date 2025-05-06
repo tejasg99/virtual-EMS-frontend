@@ -40,7 +40,7 @@ class SocketService {
       auth: { token },
       reconnectionAttempts: 5,
       reconnectionDelay: 3000, // in milliseconds
-      // transports: ['websocket'], // Optionally force websocket
+      transports: ['websocket'], // force websocket
     });
 
     // Standard connection event listeners
