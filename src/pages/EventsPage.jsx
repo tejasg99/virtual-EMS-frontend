@@ -44,7 +44,7 @@ function EventsPage() {
     page: currentPage,
     limit: itemsPerPage,
     sortBy: "startTime", // Default
-    order: "asc",
+    order: "desc",
   });
 
   // Extract events and pagination info safely

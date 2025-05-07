@@ -279,7 +279,7 @@ function EventLivePage() {
   const startTime = new Date(event.startTime);
   const endTime = new Date(event.endTime);
   const isCurrentlyLive =
-    now >= startTime && now < endTime && event.status === "live";
+    (now >= startTime && now < endTime) || event.status === "live";
 
   // Allow joining for live events only
   if (!isCurrentlyLive) {
