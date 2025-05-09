@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState, memo } from 'react'; // Import memo
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../../slices/authSlice';
+import { toast } from 'react-hot-toast';
 
-const JITSI_DOMAIN = 'meet.jit.si';
+const JITSI_DOMAIN = import.meta.env.VITE_JITSI_DOMAIN;
 
 // Reusable Loading Spinner
 const LoadingSpinner = () => (
@@ -42,14 +43,14 @@ const JitsiMeet = memo(({ roomName, displayName: propDisplayName, eventTitle }) 
     };
 
     // Cleanup script tag if component unmounts before load
-    return () => {
-        const existingScript = document.querySelector(`script[src="https://${JITSI_DOMAIN}/external_api.js"]`);
-        if (existingScript && !jitsiLoaded) { // Only remove if loading failed/was interrupted
-            console.log("Cleaning up Jitsi script tag (before load).");
-            // Be cautious removing scripts others might rely on, but okay here if isolated
-            // document.body.removeChild(existingScript);
-        }
-    };
+    // return () => {
+    //     const existingScript = document.querySelector(`script[src="https://${JITSI_DOMAIN}/external_api.js"]`);
+    //     if (existingScript && !jitsiLoaded) { // Only remove if loading failed/was interrupted
+    //         console.log("Cleaning up Jitsi script tag (before load).");
+    //         // Be cautious removing scripts others might rely on, but okay here if isolated
+    //         // document.body.removeChild(existingScript);
+    //     }
+    // };
   }, [jitsiLoaded]); // Run only once based on jitsiLoaded state
 
 
@@ -84,7 +85,14 @@ const JitsiMeet = memo(({ roomName, displayName: propDisplayName, eventTitle }) 
               configOverwrite: {
                 startWithAudioMuted: true,
                 startWithVideoMuted: true,
-                prejoinPageEnabled: false,
+                prejoinPageEnabled: false, // Explicitly disable
+                requireDisplayName: false, // Dont force users to enter a name if already provided
+                // Attempt to disable features that might trigger "members only"
+                "analytics.disabled": true,
+                // "p2p.enabled": true, // Prefer P2P? Might help sometimes.
+                // These might be relevant depending on exact Jitsi version/config on server
+                // "lobby.enable": false, // Attempt to disable server-side lobby
+                // "prejoinConfig.enabled": false, // Another way to try disabling prejoin
               },
               interfaceConfigOverwrite: {
                 DEFAULT_BACKGROUND: '#333333', // Darker background
@@ -122,6 +130,19 @@ const JitsiMeet = memo(({ roomName, displayName: propDisplayName, eventTitle }) 
                 console.log('Jitsi Meet ready to close (hangup clicked)');
                 // API instance is disposed in the cleanup
             });
+
+            api.addEventListener('videoConferenceFailed', (error) => {
+              console.error("Jitsi Conference Failed Event:", error);
+              // Specifically check for membersOnly error
+              if (error.error === 'conference.connectionError.membersOnly') {
+                  toast.error("This video conference requires moderator approval or login to join. Cannot join anonymously.", { duration: 10000 });
+                  // Optionally add UI state to show this message more permanently
+              } else {
+                  toast.error(`Video conference error: ${error.error || 'Unknown error'}`);
+              }
+              setLoading(false); // Stop loading indicator
+            });
+
             // Add other listeners if needed...
 
         } catch (error) {
