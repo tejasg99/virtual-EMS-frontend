@@ -6,9 +6,6 @@ import axiosInstance from "./axiosInstance";
 */
 
 const axiosBaseQuery = ({ baseUrl } = { baseUrl: ''}) => async ({ url, method, params, body }) => {
-    // --- ADD LOG 1: Log received arguments ---
-    // console.log('[axiosBaseQuery] Received args:', { url, method, params, body, data });
-
     try {
       // Construct the config for Axios
       const axiosConfig = {
@@ -17,8 +14,6 @@ const axiosBaseQuery = ({ baseUrl } = { baseUrl: ''}) => async ({ url, method, p
         data: body, // Axios uses 'data' for the request body (e.g., for POST)
         params, // Axios uses 'params' for URL query parameters
       };
-      // --- ADD LOG 2: Log the config being sent to Axios ---
-    //   console.log('[axiosBaseQuery] Sending Axios config:', axiosConfig);
 
       // Make the request using the configured Axios instance
       const result = await axiosInstance(axiosConfig);
